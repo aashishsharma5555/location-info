@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather & Clothing Suggestions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-container input,
+        .form-container button {
+            padding: 12px;
+            margin: 8px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            border: 2px solid #2575fc;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .form-container input {
+            width: 60%;
+        }
+        .form-container button {
+            width: 150px;
+            background-color: #2575fc;
+            color: #fff;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #6a11cb;
+        }
+        .form-container input:focus {
+            border-color: #6a11cb;
+        }
+
+        .weather-info,
+        .clothing-suggestion,
+        .location-description,
+        .latest-news {
+            background-color: #fff;
+            color: #333;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: fadeInUp 1s ease-in-out forwards;
+        }
+        .weather-info {
+            animation-delay: 0.3s;
+        }
+        .clothing-suggestion {
+            animation-delay: 0.6s;
+        }
+        .location-description {
+            animation-delay: 0.9s;
+        }
+        .latest-news {
+            animation-delay: 1.2s;
+        }
+
+        .links {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .links li {
+            margin: 10px 15px; /* Added spacing between buttons */
+        }
+        .links a {
+            display: inline-block; /* Makes buttons flat and aligned horizontally */
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: #fff;
+            background-color: #000; /* Set background color to black */
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            text-align: center; /* Ensures the text is centered */
+        }
+        .links a:hover {
+            background-color: #333; /* Darker shade on hover */
+        }
+
+        .news-links a {
+            display: block;
+            color: #2575fc;
+            margin: 10px 0;
+            text-decoration: none;
+        }
+
+        .news-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animation for fading in */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Animation for slide up effect */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MAX_MILES.com</h1>
+
+        <!-- Form to input the location -->
+        <div class="form-container">
+            <form method="get">
+                <label for="location">Enter Location:</label>
+                <input type="text" id="location" name="location" value="{{ location }}" required>
+                <button type="submit">Get Suggestions</button>
+            </form>
+        </div>
+
+        <!-- Display weather and clothing suggestion -->
+        {% if destination_weather %}
+            <div class="weather-info">
+                <h2>Weather Information for {{ location }}:</h2>
+                <p><strong>Temperature:</strong> {{ destination_weather.temp_c }}°C</p>
+                <p><strong>Condition:</strong> {{ destination_weather.condition.text }}</p>
+                <p><strong>Humidity:</strong> {{ destination_weather.humidity }}%</p>
+            </div>
+
+            <div class="clothing-suggestion">
+                <h3>Clothing Suggestion:</h3>
+                <h4>{{ destination_suggestion }}</h4>
+                <h4>Shop for these items:</h4>
+                <ul class="links">
+                    <li><a href="{{ links.flipkart }}" target="_blank">Flipkart</a></li>
+                    <li><a href="{{ links.myntra }}" target="_blank">Myntra</a></li>
+                    <li><a href="{{ links.amazon }}" target="_blank">Amazon</a></li>
+                </ul>
+            </div>
+        {% elif suggestion %}
+            <p>{{ suggestion }}</p>
+        {% else %}
+            <p>No weather information available.</p>
+        {% endif %}
+
+        <!-- Display location description -->
+        {% if location_description %}
+            <div class="location-description">
+                <h3>About {{ location }}:</h3>
+                <p>{{ location_description }}</p>
+            </div>
+        {% else %}
+            <p>No description available for this location.</p>
+        {% endif %}
+
+        <!-- Display latest news about the location -->
+        {% if latest_news %}
+            <div class="latest-news">
+                <h3>Latest News for {{ location }}:</h3>
+                <div class="news-links">
+                    {% for news_item in latest_news %}
+                        <a href="{{ news_item.url }}" target="_blank">{{ news_item.title }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p>No news available for this location.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
