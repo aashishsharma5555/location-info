@@ -1,5 +1,6 @@
 import requests
 from django.shortcuts import render
+from django.conf import settings
 
 # WeatherAPI Key (Replace with your actual API key)
 WEATHER_API_KEY = '2aea3085bbe74c0fa9274127252301'
@@ -113,6 +114,11 @@ def home(request):
             temperature = weather_data['current']['temp_c']
             destination_weather = weather_data['current']
 
+            # Try to extract latitude/longitude from WeatherAPI response (if present)
+            loc_info = weather_data.get('location', {}) if isinstance(weather_data, dict) else {}
+            map_lat = loc_info.get('lat')
+            map_lon = loc_info.get('lon')
+
             # Get clothing suggestion and links
             destination_suggestion, links = get_clothing_suggestion(temperature)
 
@@ -130,4 +136,7 @@ def home(request):
         'links': links,
         'location_description': location_description,
         'latest_news': latest_news,  # Pass the latest news to the template
+        'map_lat': map_lat if 'map_lat' in locals() else None,
+        'map_lon': map_lon if 'map_lon' in locals() else None,
+        'google_maps_api_key': getattr(settings, 'GOOGLE_MAPS_API_KEY', ''),
     })
